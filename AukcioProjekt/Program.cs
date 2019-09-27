@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace AukcioProjekt
 {
@@ -86,7 +87,6 @@ namespace AukcioProjekt
                 this.licitekSzama++;
                 this.legutolsoLicitIdeje = DateTime.Today;
             }
-
         }
 
         public override string ToString()
@@ -103,13 +103,59 @@ namespace AukcioProjekt
 
             return adatok;
         }
-
+public Festmeny(string cim, string festo, string stilus)
+        {
+            this.cim = cim;
+            this.festo = festo;
+            this.stilus = stilus;
+            this.licitekSzama = 0;
+            this.elkelt = false;
+        }
 
     }
     class Program
     {
+        static List<Festmeny> festmenyek = new List<Festmeny>();
+
         static void Main(string[] args)
         {
+            //-- 2.a feladat
+            festmenyek.Add(new Festmeny("Moderson-Becker", "Csendes élet", "Expresszionista"));
+            festmenyek.Add(new Festmeny("Franz Marc", "Kék ló", "Expresszionista"));
+            Beolvas();
+            Console.WriteLine("\nProgram vége!");
+            Console.ReadKey();
+        }
+
+        static void Beolvas()
+        {
+            Console.WriteLine(" Bálint Ferenc adatainak beolvasása...");
+            string fajl = @"..\..\festmenyek.csv";
+            StreamReader sr = null;
+            try
+            {
+                using (sr = new StreamReader(fajl))
+                {
+                    while (!sr.EndOfStream)
+                    {
+                        string[] sor = sr.ReadLine().Split(';');
+                        festmenyek.Add(new Festmeny(sor[0], sor[1], sor[2]));
+                    }
+                }
+            }
+            catch (IOException e)
+            {
+                Console.WriteLine(e.Message);
+                throw;
+            }
+            finally
+            {
+                if (sr!=null)
+                {
+                    sr.Close();
+                    sr.Dispose();
+                }
+            }
         }
     }
 }
