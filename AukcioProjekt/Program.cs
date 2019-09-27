@@ -56,6 +56,17 @@ namespace AukcioProjekt
 
         public void Licit(int mertek)
         {
+            if (mertek<10)
+            {
+                Console.WriteLine("Túl alacsony licit!");
+                return;
+            }
+            else if (mertek>100)
+            {
+                Console.WriteLine("Túl magas licit!");
+                return;
+            }
+
             if (this.elkelt)
             {
                 Console.WriteLine("A festmény már elkelt, nem lehet rá licitálni!");
@@ -77,7 +88,22 @@ namespace AukcioProjekt
             }
 
         }
-            
+
+        public override string ToString()
+        {
+            string adatok = this.festo + " " + this.cim + " (" + this.stilus + ")\n";
+            if (elkelt)
+            {
+                adatok += "Elkelt";
+            }
+            else
+            {
+                adatok += "licit: " + this.legmagasabbLicit + " - " + this.legutolsoLicitIdeje + " (" + this.licitekSzama + ")\n";
+            }
+
+            return adatok;
+        }
+
 
     }
     class Program
