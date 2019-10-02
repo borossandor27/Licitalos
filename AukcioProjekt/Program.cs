@@ -103,7 +103,7 @@ namespace AukcioProjekt
 
             return adatok;
         }
-public Festmeny(string cim, string festo, string stilus)
+        public Festmeny(string cim, string festo, string stilus)
         {
             this.cim = cim;
             this.festo = festo;
@@ -120,9 +120,28 @@ public Festmeny(string cim, string festo, string stilus)
         static void Main(string[] args)
         {
             //-- 2.a feladat
-            festmenyek.Add(new Festmeny("Moderson-Becker", "Csendes élet", "Expresszionista"));
-            festmenyek.Add(new Festmeny("Franz Marc", "Kék ló", "Expresszionista"));
+            festmenyek.Add(new Festmeny("Csendes élet", "Moderson-Becker", "Expresszionista"));
+            festmenyek.Add(new Festmeny("Kék ló", "Franz Marc", "Expresszionista"));
+            Console.WriteLine("\nHány festményt szeretne megadni?");
+            int db = int.Parse(Console.ReadLine());
+            for (int i = 0; i < db; i++)
+            {
+                festmenyek.Add(festmenyFelhasznalotol());
+            }
             Beolvas();
+            //-- véletlenszerű licitalas
+            Random rnd = new Random();
+            for (int i = 0; i < 20; i++)
+            {
+                festmenyek[rnd.Next(festmenyek.Count)].Licit(rnd.Next(10, 100));
+            }
+            //-- felhasznaloi licit
+            Console.WriteLine("\nKérem, licitáljon!");
+            felhasznaloiLicit();
+            foreach (Festmeny item in festmenyek)
+            {
+                Console.WriteLine(item.ToString());
+            }
             Console.WriteLine("\nProgram vége!");
             Console.ReadKey();
         }
@@ -155,6 +174,72 @@ public Festmeny(string cim, string festo, string stilus)
                     sr.Close();
                     sr.Dispose();
                 }
+            }
+        }
+        static Festmeny festmenyFelhasznalotol()
+        {
+            Console.Write("\nA festő neve: ");
+            string festo = Console.ReadLine();
+            Console.Write("A mű címe: ");
+            string cim = Console.ReadLine();
+            Console.Write("Stílus: ");
+            string stilus = Console.ReadLine();
+            return new Festmeny(cim, festo, stilus);
+        }
+        static void felhasznaloiLicit()
+        {
+            while (true)
+            {
+                Console.WriteLine($"\nKérem a kép sorszámát (1-{festmenyek.Count}): ");
+                int db = 0;
+                int ssz = 0;
+                do
+                {
+                    if (db > 0)
+                    {
+                        Console.WriteLine($"Kérem 1 és {festmenyek.Count} közötti értéket adjon meg!");
+                    }
+                    db++;
+                } while (!int.TryParse(Console.ReadLine(), out ssz) || ssz < 0 || ssz >= festmenyek.Count);
+                if (ssz == 0)
+                {
+                    return;
+                }
+                else
+                {
+                    /*
+                     * A sorszám megadása után, ha az adott festményre több mint 2 perce
+                     * érkezett utoljára licit akkor állítsa be elkeltre, 
+                     * majd hibaüzenetet írjon ki, majd kérjen be új sorszámot
+                     */
+                    Console.WriteLine("Time Difference (minutes): " + DateTime.Today.Subtract(festmenyek[ssz].dateTime).Minutes);
+                    if (DateTime.Today.Subtract(festmenyek[ssz-1].dateTime).Minutes > 2)
+                    {
+                        festmenyek[ssz - 1].Elkelt = true;
+                        Console.WriteLine("Elkelt!");
+                        continue;
+                    }
+
+                }
+                int licit = 0;
+                Console.Write("A licit értéke: ");
+                if (int.TryParse(Console.ReadLine(), out licit))
+                {
+                    if (licit==0)
+                    {
+                        festmenyek[ssz - 1].Licit();
+                    }
+                    else
+                    {
+                        festmenyek[ssz - 1].Licit(licit);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("\nÉrvénytelen licit!");
+                    return;
+                }
+
             }
         }
     }
